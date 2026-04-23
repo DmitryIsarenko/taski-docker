@@ -1,0 +1,20 @@
+volumes:
+  pg_data:
+
+services:
+  db:
+    image: postgres:13.10
+    container_name: db
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  backend:
+    build: ./backend/
+    container_name: back
+    env_file: .env
+    depends_on:
+      - db
+  frontend:
+    container_name: front
+    env_file: .env
+    build: ./frontend/
