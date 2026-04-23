@@ -1,5 +1,6 @@
 volumes:
   pg_data:
+  static:
 
 services:
   db:
@@ -14,7 +15,15 @@ services:
     env_file: .env
     depends_on:
       - db
+    volumes:
+      - static:/backend_static
   frontend:
     container_name: front
     env_file: .env
     build: ./frontend/
+  gateway:
+    build: ./gateway/
+    ports:
+      - 8000:80
+    volumes:
+      - static:/staticfiles
