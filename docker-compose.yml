@@ -9,6 +9,7 @@ services:
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
+
   backend:
     build: ./backend/
     container_name: back
@@ -17,10 +18,15 @@ services:
       - db
     volumes:
       - static:/backend_static
+
   frontend:
     container_name: front
     env_file: .env
     build: ./frontend/
+    volumes:
+      - static:/frontend_static
+    command: ["cp", "-r", "/app/build/.", "/frontend_static/"]
+
   gateway:
     build: ./gateway/
     ports:
