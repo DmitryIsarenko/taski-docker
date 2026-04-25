@@ -1,0 +1,45 @@
+volumes:
+  pg_data:
+  static:
+
+services:
+  db:
+    image: postgres:13.10
+    container_name: db
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  backend:
+    image: dmitryisarenko/taski_backend
+    restart: always
+    container_name: back
+    env_file: .env
+    depends_on:
+      - db
+    volumes:
+      - static:/backend_static
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  frontend:
+    container_name: front
+    env_file: .env
+    image: dmitryisarenko/taski_frontend
+    volumes:
+      - static:/frontend_static
+    command: ["cp", "-r", "/app/build/.", "/frontend_static/"]
+
+  gateway:
+    image: dmitryisarenko/taski_gateway
+    restart: always
+    ports:
+      - 8000:80
+    volumes:
+      - static:/staticfiles
+    depends_on:
+      backend:
+        condition: service_healthy
