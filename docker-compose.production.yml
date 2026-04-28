@@ -21,8 +21,9 @@ services:
       - static:/backend_static
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/"]
-      interval: 5s
-      timeout: 3s
+      start_period: 15s
+      interval: 20s
+      timeout: 10s
       retries: 5
 
   frontend:
