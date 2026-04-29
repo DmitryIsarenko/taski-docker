@@ -7,6 +7,11 @@ services:
     image: postgres:13.10
     container_name: db
     env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - pg_data:/var/lib/postgresql/data
 
@@ -16,7 +21,8 @@ services:
     container_name: back
     env_file: .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - static:/backend_static
     healthcheck:
